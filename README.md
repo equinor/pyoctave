@@ -1,7 +1,14 @@
-WIP
+PyOctave
+====
 
-A very simple wrapper for running octave code from python.
+PyOctave is a simple python wrapper for running octave code from python.
 
-Heavily inspired by https://github.com/blink1073/oct2py.
+```python
+    from pyOctave import Octave
+    with Octave() as oct:
+         oct.zeros(3) # returns array([[0., 0., 0.], [0., 0., 0.], [0., 0., 0.]])
+```
 
-When last compared oct2py was too slow for us. pyoctave was faster. Is it still? Has our way of using octave changed such that the speed penalty is still relevant?
+See docstring of [pyOctave.Octave](src/pyoctave/__init__.py#L50) for more examples.
+
+Inspired by https://github.com/blink1073/oct2py.

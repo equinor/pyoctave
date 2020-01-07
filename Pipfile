@@ -11,3 +11,6 @@ isort = "*"
 [packages]
 scipy = "*"
 pexpect = "*"
+
+[requires]
+python_version = "3.7"

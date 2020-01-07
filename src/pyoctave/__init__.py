@@ -1,10 +1,20 @@
+import re
+import shutil
 import tempfile
-from subprocess import call
+
+import pexpect
 
 import scipy.io as sio
 
+# Hack: pyoctave listens to the output of octave-cli and expects a uuid to be
+# printed to indicate finished commands before sending a new command. The uuid
+# could possibly collide with the output of the command, in which case we are
+# in trouble.
+delimiter_uuid = "bb8ef39c312b11eaab24331cd2ebe18c"
+end_of_command_regex = re.compile(f"[^({delimiter_uuid})]*{delimiter_uuid}".encode())
 
-def run_octave(infile, outfile, fun, *args):
+
+def run_octave(octaver, infile, outfile, fun, *args):
     kwargs = {f"i{i}": arg for i, arg in enumerate(args)}
     m_arg = ", ".join(kwargs.keys())
     m_script = f"{fun}({m_arg})"
@@ -24,9 +34,10 @@ def run_octave(infile, outfile, fun, *args):
              save -mat '{outfile}' out nargs;
              """
     sio.savemat(infile, kwargs)
-    ret = call(["octave-cli", "--silent", "--eval", ev])
-    if ret != 0:
-        raise RuntimeError()
+
+    for line in ev.splitlines():
+        octaver.sendline(line)
+        octaver.expect(end_of_command_regex)
 
     matf = sio.loadmat(outfile)
 
@@ -39,20 +50,57 @@ class Octave:
     """
     The Octave object has functions available in Octave as methods.
 
-    >>> oct = Octave()
-    >>> oct.zeros(3)
+    >>> with Octave() as oct:
+    ...     oct.zeros(3)
     array([[0., 0., 0.],
            [0., 0., 0.],
            [0., 0., 0.]])
+
+    Unfortunately, sometimes returned values must be squeezed as
+    datatypes are not fully compatible with python
+
+    >>> with Octave() as oct:
+    ...     oct.zeros(1,3)
+    array([[0., 0., 0.]])
+
+    Own matlab scripts can be added to the path by
+
+    >>> from os import path
+    >>> with Octave() as oct:
+    ...    _ = oct.addpath(path.dirname(__file__) + "/../../examples/")
+    ...    oct.myFunc()
+    array([[0.]])
+
     """
 
-    def __getattr__(self, fun):
+    def __init__(self):
+        if shutil.which("octave-cli") is None:
+            raise Exception("Could not find executable octave-cli")
+
+    def __enter__(self):
+        self.octaver = pexpect.spawn("octave-cli", ["--silent"])
+
+        # Sets PS1 and PS2 to the uuid which indicates
+        # a finished command.
+        self.octaver.sendline(f'PS1("{delimiter_uuid}");')
+        self.octaver.expect(end_of_command_regex)
+        self.octaver.sendline(f'PS2("{delimiter_uuid}");')
+        self.octaver.expect(end_of_command_regex)
+
+        return self
+
+    def __exit__(self, type, value, traceback):
+        self.octaver.close()
+
+    def __getattr__(self1, fun):
         class Runner:
-            def __call__(self, *args):
+            def __call__(self2, *args):
                 ret = None
                 with tempfile.NamedTemporaryFile(suffix=".mat") as infile:
                     with tempfile.NamedTemporaryFile(suffix=".mat") as outfile:
-                        ret = run_octave(infile.name, outfile.name, fun, *args)
+                        ret = run_octave(
+                            self1.octaver, infile.name, outfile.name, fun, *args
+                        )
                 return ret
 
         return Runner()

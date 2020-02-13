@@ -78,7 +78,7 @@ class Octave:
             raise Exception("Could not find executable octave-cli")
 
     def __enter__(self):
-        self.octaver = pexpect.spawn("octave-cli", ["--silent"])
+        self.octaver = pexpect.spawn("octave-cli", ["--silent", "--no-line-editing"])
 
         # Sets PS1 and PS2 to the uuid which indicates
         # a finished command.

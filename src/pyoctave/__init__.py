@@ -31,8 +31,8 @@ def run_octave(octaver, infile, outfile, fun, *args):
              else
                out = {m_script};
              end
-             save -mat '{outfile}' out nargs;
-             """
+             save -mat '{outfile}' out nargs -v7;
+    """
     sio.savemat(infile, kwargs)
 
     for line in ev.splitlines():

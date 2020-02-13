@@ -46,6 +46,19 @@ def run_octave(octaver, infile, outfile, fun, *args):
     return matf["out"]
 
 
+def run_octave_no_ret(octaver, infile, fun, *args):
+    kwargs = {f"i{i}": arg for i, arg in enumerate(args)}
+    m_arg = ", ".join(kwargs.keys())
+    m_script = f"""
+    load('{infile}');
+    {fun}({m_arg});
+    """
+    sio.savemat(infile, kwargs)
+    for line in m_script.splitlines():
+        octaver.sendline(line)
+        octaver.expect(end_of_command_regex, timeout=None)
+
+
 class Octave:
     """
     The Octave object has functions available in Octave as methods.
@@ -106,3 +119,20 @@ class Octave:
                 return ret
 
         return Runner()
+
+    @property
+    def no_return(self1):
+        class OuterRunner:
+            def __getattr__(self2, fun):
+                class Runner:
+                    def __call__(self3, *args):
+                        ret = None
+                        with tempfile.NamedTemporaryFile(suffix=".mat") as infile:
+                            ret = run_octave_no_ret(
+                                self1.octaver, infile.name, fun, *args
+                            )
+                        return ret
+
+                return Runner()
+
+        return OuterRunner()

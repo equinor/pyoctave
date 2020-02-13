@@ -83,9 +83,11 @@ class Octave:
         # Sets PS1 and PS2 to the uuid which indicates
         # a finished command.
         self.octaver.sendline(f'PS1("{delimiter_uuid}");')
-        self.octaver.expect(end_of_command_regex)
+        self.octaver.expect(end_of_command_regex, timeout=None)
+        self.octaver.expect(end_of_command_regex, timeout=None)
         self.octaver.sendline(f'PS2("{delimiter_uuid}");')
-        self.octaver.expect(end_of_command_regex)
+        self.octaver.expect(end_of_command_regex, timeout=None)
+        self.octaver.expect(end_of_command_regex, timeout=None)
 
         return self
 

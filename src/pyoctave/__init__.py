@@ -37,7 +37,7 @@ def run_octave(octaver, infile, outfile, fun, *args):
 
     for line in ev.splitlines():
         octaver.sendline(line)
-        octaver.expect(end_of_command_regex)
+        octaver.expect(end_of_command_regex, timeout=None)
 
     matf = sio.loadmat(outfile)
 

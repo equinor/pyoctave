@@ -24,6 +24,6 @@ setup(
     ],
     include_package_data=True,
     install_requires=["scipy", "pexpect"],
-    python_requires=">=3.7",
+    python_requires=">=3.6",
     tests_require=["pytest"],
 )

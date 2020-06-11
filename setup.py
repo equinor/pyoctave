@@ -5,7 +5,7 @@ setup(
     description="simply python wrapper for octave",
     long_description=open("README.md").read(),
     long_description_content_type="text/markdown",
-    version="1.1.0",
+    version="1.2.0",
     author="Equinor ASA",
     author_email="fg_gpl@equinor.com",
     license="LGPL-3.0",

@@ -3,8 +3,11 @@ import shutil
 import tempfile
 
 import pexpect
-
 import scipy.io as sio
+
+import pyoctave.version
+
+__version__ = pyoctave.version.version
 
 # Hack: pyoctave listens to the output of octave-cli and expects a uuid to be
 # printed to indicate finished commands before sending a new command. The uuid

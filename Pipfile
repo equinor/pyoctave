@@ -9,7 +9,7 @@ black = "==24.3.0"
 isort = "*"
 
 [packages]
-scipy = "*"
+scipy = ">=1.10"
 pexpect = "*"
 
 [requires]

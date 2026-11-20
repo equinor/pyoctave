@@ -6,15 +6,17 @@ build-backend = "setuptools.build_meta"
 name = "pyoctave"
 description = "simply python wrapper for octave"
 readme = "README.md"
-authors = [{ name = "Equinor ASA", email = "fg_gpl@equinor.com" }]
+authors = [{ name = "Equinor ASA", email = "fg_sib-scout@equinor.com" }]
 license = "LGPL-3.0-or-later"
-requires-python = ">=3.12, <3.16"
+license-files = ["License.md"]
+requires-python = ">=3.11, <3.16"
 dynamic = ["version"]
 classifiers = [
     "Environment :: Other Environment",
     "Intended Audience :: Developers",
     "Intended Audience :: Science/Research",
     "Programming Language :: Python",
+    "Programming Language :: Python :: 3.11",
     "Programming Language :: Python :: 3.12",
     "Programming Language :: Python :: 3.13",
     "Programming Language :: Python :: 3.14",
@@ -25,6 +27,9 @@ classifiers = [
 ]
 dependencies = ["scipy>=1.10", "pexpect"]
 
+[project.urls]
+Homepage = "https://github.com/equinor/pyoctave"
+
 [dependency-groups]
 dev = ["pytest>=7.2", "black", "isort", "flake8"]
 
@@ -32,8 +37,6 @@ dev = ["pytest>=7.2", "black", "isort", "flake8"]
 where = ["src"]
 
 [tool.setuptools_scm]
-# Fallback needed due to https://github.com/dependabot/dependabot-core/issues/12340
-fallback_version = "0.0.0"
 
 [tool.uv]
 exclude-newer = "7 days"

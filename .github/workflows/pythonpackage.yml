@@ -4,8 +4,7 @@ on:
   pull_request:
   push:
     branches: [master]
-  release:
-    types: [published]
+    tags: ["*"]
 
 permissions:
   contents: read
@@ -77,7 +76,7 @@ jobs:
     needs: build
     runs-on: ubuntu-latest
     timeout-minutes: 20
-    if: github.event_name == 'release'
+    if: github.event_name == 'push' && startsWith(github.ref, 'refs/tags/')
     environment: pypi
     permissions:
       id-token: write
